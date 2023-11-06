@@ -1,56 +1,71 @@
 #include "lists.h"
-#include <stdlib.h>
-#include <stdio.h>
+
+listint_t *reverse_listint(listint_t **head);
+int is_palindrome(listint_t **head);
 
 /**
-*add_nodeint - ...
-*@head: ...
-*@n: ...
-*Return: ...
-*/
+ * reverse_listint - ...
+ * @head: ...
+ * Return: ...
+ */
 
-listint_t *add_nodeint(listint_t **head, const int n)
+listint_t *reverse_listint(listint_t **head)
 {
-	listint_t *new;
+	listint_t *node = *head, *next, *prev = NULL;
 
-	new = malloc(sizeof(listint_t));
-	if (new == NULL)
-		return (NULL);
-	new->n = n;
-	new->next = *head;
-	*head = new;
-	return (new);
+	while (node)
+	{
+		next = node->next;
+		node->next = prev;
+		prev = node;
+		node = next;
+	}
+
+	*head = prev;
+	return (*head);
 }
 
 /**
-*is_palindrome - ...
-*@head: ...
-*Return: ...
-*/
+ * is_palindrome - ...
+ * @head: ...
+ * Return: ...
+ */
 
 int is_palindrome(listint_t **head)
 {
-	listint_t *head2 = *head;
-	listint_t *aux = NULL, *aux2 = NULL;
+	listint_t *tmp, *rev, *mid;
+	size_t size = 0, i;
 
-	if (*head == NULL || head2->next == NULL)
+	if (*head == NULL || (*head)->next == NULL)
 		return (1);
-	while (head2 != NULL)
+
+	tmp = *head;
+	while (tmp)
 	{
-		add_nodeint(&aux, head2->n);
-		head2 = head2->next;
+		size++;
+		tmp = tmp->next;
 	}
-	aux2 = aux;
-	while (*head != NULL)
+
+	tmp = *head;
+	for (i = 0; i < (size / 2) - 1; i++)
+		tmp = tmp->next;
+
+	if ((size % 2) == 0 && tmp->n != tmp->next->n)
+		return (0);
+
+	tmp = tmp->next->next;
+	rev = reverse_listint(&tmp);
+	mid = rev;
+
+	tmp = *head;
+	while (rev)
 	{
-		if ((*head)->n != aux2->n)
-		{
-			free_listint(aux);
+		if (tmp->n != rev->n)
 			return (0);
-		}
-		*head = (*head)->next;
-		aux2 = aux2->next;
+		tmp = tmp->next;
+		rev = rev->next;
 	}
-	free_listint(aux);
+	reverse_listint(&mid);
+
 	return (1);
 }
